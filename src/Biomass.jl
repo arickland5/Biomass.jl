@@ -1,8 +1,7 @@
 module Biomass
-
 #greet() = print("Hello World!")
     export BiomassGUI
 
-    include ("BiomassGUI.jl")
+    include("BiomassGUI.jl")
 
-end # module
+end #module

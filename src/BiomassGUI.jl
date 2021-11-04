@@ -3,5 +3,5 @@ function BiomassGUIPrivate()
 end
 
 function BiomassGUI()
-    print(BiomassGUIPrivate())
+    println(BiomassGUIPrivate())
 end
