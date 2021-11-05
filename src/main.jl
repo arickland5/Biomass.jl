@@ -264,7 +264,7 @@ function mainPI()
         set_gtk_property!(helpCr, :sensitive, true)
 
         empty!(processList)
-        empty!(metricsList)
+        empty!(rawmaterialList)
         empty!(criterionList)
 
         newSel = length(dictEq["$(baseCaseList[currentID, 2])"])
@@ -298,7 +298,7 @@ function mainPI()
 
         for i = 1:newSelMet
             push!(
-                metricsList,
+                rawmaterialList,
                 (
                 dictMet["$(baseCaseList[currentID, 2])"][i][1],
                 dictMet["$(baseCaseList[currentID, 2])"][i][2],
@@ -391,7 +391,7 @@ function mainPI()
             delete!(dictCriteriaM, baseCaseList[currentID, 2])
             deleteat!(baseCaseList, currentID)
             empty!(processList)
-            empty!(metricsList)
+            empty!(rawmaterialList)
             empty!(criterionList)
 
             if length(baseCaseList) > 0
@@ -402,7 +402,7 @@ function mainPI()
                 global idxBC = 1
                 empty!(baseCaseList)
                 empty!(processList)
-                empty!(metricsList)
+                empty!(rawmaterialList)
                 empty!(criterionList)
                 set_gtk_property!(clearBC, :sensitive, false)
                 set_gtk_property!(clearEq, :sensitive, false)
@@ -432,7 +432,7 @@ function mainPI()
     signal_connect(clearBC, :clicked) do widget
         empty!(baseCaseList)
         empty!(processList)
-        empty!(metricsList)
+        empty!(rawmaterialList)
         empty!(criterionList)
         set_gtk_property!(clearBC, :sensitive, false)
         set_gtk_property!(clearEq, :sensitive, false)
@@ -838,8 +838,8 @@ function mainPI()
     push!(equipmentFrame, equipmentGrid)
     ####################################################################################################################
 
-    # Metrics ##########################################################################################################
-    global listMet = DataFrames.DataFrame(ID = Int[], Metric = String[], Symbol = String[], Value = String[])
+    # Rawmaterial ##########################################################################################################
+    global listMet = DataFrames.DataFrame(ID = Int[], RawMaterial = String[], Symbol = String[], Value = String[])
     global dictMet = Dict()
 
     # Add avilable aquipments and phenomenas
@@ -856,43 +856,43 @@ function mainPI()
     push!(listMet, (11, "Carbon footprint", "CF", "not specified"))
     push!(listMet, (12, "Fire and explosion damage index", "FEDI", "not specified"))
 
-    metricsFrame = Frame()
-    set_gtk_property!(metricsFrame, :width_request, (h / 2) - 15)
-    set_gtk_property!(metricsFrame, :label_xalign, 0.50)
+    rawmaterialFrame = Frame()
+    set_gtk_property!(rawmaterialFrame, :width_request, (h / 2) - 15)
+    set_gtk_property!(rawmaterialFrame, :label_xalign, 0.50)
 
-    metricsGrid = Grid()
-    set_gtk_property!(metricsGrid, :column_spacing, 10)
-    set_gtk_property!(metricsGrid, :row_spacing, 10)
-    set_gtk_property!(metricsGrid, :margin_top, 5)
-    set_gtk_property!(metricsGrid, :margin_bottom, 10)
-    set_gtk_property!(metricsGrid, :margin_left, 10)
-    set_gtk_property!(metricsGrid, :margin_right, 10)
+    rawmaterialGrid = Grid()
+    set_gtk_property!(rawmaterialGrid, :column_spacing, 10)
+    set_gtk_property!(rawmaterialGrid, :row_spacing, 10)
+    set_gtk_property!(rawmaterialGrid, :margin_top, 5)
+    set_gtk_property!(rawmaterialGrid, :margin_bottom, 10)
+    set_gtk_property!(rawmaterialGrid, :margin_left, 10)
+    set_gtk_property!(rawmaterialGrid, :margin_right, 10)
 
-    # TreeView for Metrics
+    # TreeView for Rawmaterial
     wBC = (h / 2) - 15
-    metricsFrameTree = Frame()
+    rawmaterialFrameTree = Frame()
 
     if Sys.iswindows()
-        set_gtk_property!(metricsFrameTree, :height_request, (hNb - 30)/2 - 110)
+        set_gtk_property!(rawmaterialFrameTree, :height_request, (hNb - 30)/2 - 110)
     else
-        set_gtk_property!(metricsFrameTree, :height_request, (hNb - 30)/2 - 101)
+        set_gtk_property!(rawmaterialFrameTree, :height_request, (hNb - 30)/2 - 101)
     end
 
-    set_gtk_property!(metricsFrameTree, :width_request, wBC - 20)
-    set_gtk_property!(metricsFrameTree, :margin_top, 5)
-    metricsScroll = ScrolledWindow()
-    push!(metricsFrameTree, metricsScroll)
+    set_gtk_property!(rawmaterialFrameTree, :width_request, wBC - 20)
+    set_gtk_property!(rawmaterialFrameTree, :margin_top, 5)
+    rawmaterialScroll = ScrolledWindow()
+    push!(rawmaterialFrameTree, rawmaterialScroll)
 
     # Table for Case Design
-    metricsList = ListStore(String, String, String, String)
+    rawmaterialList = ListStore(String, String, String, String)
 
     # Visual Table for Case Design
-    metricsTreeView = TreeView(TreeModel(metricsList))
-    set_gtk_property!(metricsTreeView, :reorderable, true)
-    set_gtk_property!(metricsTreeView, :enable_grid_lines, 3)
+    rawmaterialTreeView = TreeView(TreeModel(rawmaterialList))
+    set_gtk_property!(rawmaterialTreeView, :reorderable, true)
+    set_gtk_property!(rawmaterialTreeView, :enable_grid_lines, 3)
 
     # Set selectable
-    selmodelMetrics = G_.selection(metricsTreeView)
+    selmodelRawmaterial = G_.selection(rawmaterialTreeView)
 
     renderTxtM1 = CellRendererText()
     renderTxtM2 = CellRendererText()
@@ -903,7 +903,7 @@ function mainPI()
     set_gtk_property!(renderTxtM3, :editable, true)
 
     c1 = TreeViewColumn("ID", renderTxtM1, Dict([("text", 0)]))
-    c2 = TreeViewColumn("Metric", renderTxtM2, Dict([("text", 1)]))
+    c2 = TreeViewColumn("RawMaterial", renderTxtM2, Dict([("text", 1)]))
     c3 = TreeViewColumn("Symbol", renderTxtM2, Dict([("text", 2)]))
     c4 = TreeViewColumn("Value [Kg/h]", renderTxtM3, Dict([("text", 3)]))
 
@@ -912,10 +912,10 @@ function mainPI()
         Gtk.GAccessor.resizable(c, true)
     end
 
-    push!(metricsTreeView, c1, c2, c3, c4)
-    push!(metricsScroll, metricsTreeView)
+    push!(rawmaterialTreeView, c1, c2, c3, c4)
+    push!(rawmaterialScroll, rawmaterialTreeView)
 
-    metricsGrid[1:4, 1] = metricsFrameTree
+    rawmaterialGrid[1:4, 1] = rawmaterialFrameTree
 
     signal_connect(renderTxtM1, "edited") do widget, path, text
         idxTreeMet = parse(Int, path) + 1
@@ -923,34 +923,34 @@ function mainPI()
 
 
                 if idxIDMet >= 1 && idxIDMet <= 12
-                    metricsList[idxTreeMet, 1] = text
-                    metricsList[idxTreeMet, 2] = listMet[idxIDMet, 2]
-                    metricsList[idxTreeMet, 3] = listMet[idxIDMet, 3]
+                    rawmaterialList[idxTreeMet, 1] = text
+                    rawmaterialList[idxTreeMet, 2] = listMet[idxIDMet, 2]
+                    rawmaterialList[idxTreeMet, 3] = listMet[idxIDMet, 3]
 
                     newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
                     dictMet["$(baseCaseList[newidxBC,2])"] = []
 
-                    testMet = zeros(1, length(metricsList))
-                    for i = 1:length(metricsList)
+                    testMet = zeros(1, length(rawmaterialList))
+                    for i = 1:length(rawmaterialList)
                         push!(
                             dictMet["$(baseCaseList[newidxBC,2])"],
-                            (metricsList[i, 1], metricsList[i, 2], metricsList[i, 3], metricsList[i, 4])
+                            (rawmaterialList[i, 1], rawmaterialList[i, 2], rawmaterialList[i, 3], rawmaterialList[i, 4])
                             )
 
-                            if (metricsList[i, 1] == "not specified") || (metricsList[i, 4] == "not specified")
+                            if (rawmaterialList[i, 1] == "not specified") || (rawmaterialList[i, 4] == "not specified")
                                 testMet[i] = 1
                             end
                     end
                     newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-                    if length(metricsList) >= 1
+                    if length(rawmaterialList) >= 1
                         if sum(testMet) == 0
-                            baseCaseList[newidxBC, 4] = @sprintf("Metrics = %i, Complete", length(metricsList))
+                            baseCaseList[newidxBC, 4] = @sprintf("Rawmaterial = %i, Complete", length(rawmaterialList))
                         end
                     end
 
                 else
-                    warn_dialog("No metric specified for option $(idxIDMet), see Help", mainPIWin)
+                    warn_dialog("No raw material specified for option $(idxIDMet), see Help", mainPIWin)
                 end
     end
 
@@ -960,27 +960,27 @@ function mainPI()
         try
             idxIDMet = parse(Int, text)
 
-            metricsList[idxTreeMet, 4] = text
+            rawmaterialList[idxTreeMet, 4] = text
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictMet["$(baseCaseList[newidxBC,2])"] = []
 
-            testMet = zeros(1, length(metricsList))
-            for i = 1:length(metricsList)
+            testMet = zeros(1, length(rawmaterialList))
+            for i = 1:length(rawmaterialList)
                 push!(
                 dictMet["$(baseCaseList[newidxBC,2])"],
-                (metricsList[i, 1], metricsList[i, 2], metricsList[i, 3], metricsList[i, 4])
+                (rawmaterialList[i, 1], rawmaterialList[i, 2], rawmaterialList[i, 3], rawmaterialList[i, 4])
                 )
 
-                if (metricsList[i, 1] == "not specified") || (metricsList[i, 4] == "not specified")
+                if (rawmaterialList[i, 1] == "not specified") || (rawmaterialList[i, 4] == "not specified")
                     testMet[i] = 1
                 end
             end
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(metricsList) >= 1
+            if length(rawmaterialList) >= 1
                 if sum(testMet) == 0
-                    baseCaseList[newidxBC, 4] = @sprintf("Metrics = %i, Complete", length(metricsList))
+                    baseCaseList[newidxBC, 4] = @sprintf("Rawmaterial = %i, Complete", length(rawmaterialList))
                 end
             end
 
@@ -994,7 +994,7 @@ function mainPI()
     set_gtk_property!(addMet, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(addMet, :sensitive, false)
     signal_connect(addMet, :clicked) do widget
-         push!(metricsList, ("not specified", "not specified", "not specified", "not specified"))
+         push!(rawmaterialList, ("not specified", "not specified", "not specified", "not specified"))
          set_gtk_property!(clearMet, :sensitive, true)
          set_gtk_property!(deleteMet, :sensitive, true)
 
@@ -1008,21 +1008,21 @@ function mainPI()
     set_gtk_property!(deleteMet, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(deleteMet, :sensitive, false)
     signal_connect(deleteMet, :clicked) do widget
-        if hasselection(selmodelMetrics)
-            currentID = selected(selmodelMetrics)
-            newidxMet = Gtk.index_from_iter(metricsList, selected(selmodelMetrics))
-            deleteat!(metricsList, currentID)
+        if hasselection(selmodelRawmaterial)
+            currentID = selected(selmodelRawmaterial)
+            newidxMet = Gtk.index_from_iter(rawmaterialList, selected(selmodelRawmaterial))
+            deleteat!(rawmaterialList, currentID)
 
             currentIDBC = selected(selBC)
             nameBCSel = baseCaseList[currentIDBC, 2]
             dictMet[nameBCSel] = deleteat!(dictMet[nameBCSel], newidxMet)
 
-            if length(metricsList)==0
+            if length(rawmaterialList)==0
                 set_gtk_property!(deleteMet, :sensitive, false)
                 set_gtk_property!(clearMet, :sensitive, false)
             end
 
-            if length(metricsList) < 2
+            if length(rawmaterialList) < 2
                 newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
                 baseCaseList[newidxBC, 4] = "Incomplete"
             end
@@ -1030,20 +1030,20 @@ function mainPI()
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictMet["$(baseCaseList[newidxBC,2])"] = []
 
-            testMet = zeros(1, length(metricsList))
-            for i = 1:length(metricsList)
-                push!(dictMet["$(baseCaseList[newidxBC,2])"], (metricsList[i, 1], metricsList[i, 2], metricsList[i, 3], metricsList[i,4]))
+            testMet = zeros(1, length(rawmaterialList))
+            for i = 1:length(rawmaterialList)
+                push!(dictMet["$(baseCaseList[newidxBC,2])"], (rawmaterialList[i, 1], rawmaterialList[i, 2], rawmaterialList[i, 3], rawmaterialList[i,4]))
 
-                if (metricsList[i, 1] == "not specified") || (metricsList[i, 4] == "not specified")
+                if (rawmaterialList[i, 1] == "not specified") || (rawmaterialList[i, 4] == "not specified")
                     testMet[i] = 1
                 end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(metricsList) >= 1
+            if length(rawmaterialList) >= 1
                 if sum(testMet) == 0
-                    baseCaseList[newidxBC, 4] = @sprintf("Metrics = %i, Complete", length(metricsList))
+                    baseCaseList[newidxBC, 4] = @sprintf("Rawmaterial = %i, Complete", length(rawmaterialList))
                 end
             end
         end
@@ -1056,7 +1056,7 @@ function mainPI()
         currentIDBC = selected(selBC)
         nameBCSel = baseCaseList[currentIDBC, 2]
         dictEq[nameBCSel] = []
-        empty!(metricsList)
+        empty!(rawmaterialList)
         set_gtk_property!(clearMet, :sensitive, false)
         set_gtk_property!(deleteMet, :sensitive, false)
 
@@ -1068,37 +1068,37 @@ function mainPI()
     set_gtk_property!(helpMet, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(helpMet, :sensitive, false)
     signal_connect(helpMet, :clicked) do widget
-        # Metrics Help Win
-        metricsHelpWin = Window()
-        set_gtk_property!(metricsHelpWin, :title, "Metrics Help")
-        set_gtk_property!(metricsHelpWin, :window_position, 3)
-        set_gtk_property!(metricsHelpWin, :accept_focus, true)
-        set_gtk_property!(metricsHelpWin, :resizable, false)
-        set_gtk_property!(metricsHelpWin, :width_request, h/2.5)
+        # Rawmaterial Help Win
+        rawmaterialHelpWin = Window()
+        set_gtk_property!(rawmaterialHelpWin, :title, "Rawmaterial Help")
+        set_gtk_property!(rawmaterialHelpWin, :window_position, 3)
+        set_gtk_property!(rawmaterialHelpWin, :accept_focus, true)
+        set_gtk_property!(rawmaterialHelpWin, :resizable, false)
+        set_gtk_property!(rawmaterialHelpWin, :width_request, h/2.5)
 
-        metricsFrameHelp = Frame("Metrics evailable")
-        set_gtk_property!(metricsFrameHelp, :label_xalign, 0.5)
-        set_gtk_property!(metricsFrameHelp, :margin_top, 5)
-        set_gtk_property!(metricsFrameHelp, :margin_bottom, 10)
-        set_gtk_property!(metricsFrameHelp, :margin_left, 10)
-        set_gtk_property!(metricsFrameHelp, :margin_right, 10)
+        rawmaterialFrameHelp = Frame("Rawmaterial evailable")
+        set_gtk_property!(rawmaterialFrameHelp, :label_xalign, 0.5)
+        set_gtk_property!(rawmaterialFrameHelp, :margin_top, 5)
+        set_gtk_property!(rawmaterialFrameHelp, :margin_bottom, 10)
+        set_gtk_property!(rawmaterialFrameHelp, :margin_left, 10)
+        set_gtk_property!(rawmaterialFrameHelp, :margin_right, 10)
 
-        metricsGridHelp = Grid()
-        set_gtk_property!(metricsGridHelp, :column_spacing, 10)
-        set_gtk_property!(metricsGridHelp, :row_spacing, 10)
-        set_gtk_property!(metricsGridHelp, :margin_top, 5)
-        set_gtk_property!(metricsGridHelp, :margin_bottom, 10)
-        set_gtk_property!(metricsGridHelp, :margin_left, 10)
-        set_gtk_property!(metricsGridHelp, :margin_right, 10)
+        rawmaterialGridHelp = Grid()
+        set_gtk_property!(rawmaterialGridHelp, :column_spacing, 10)
+        set_gtk_property!(rawmaterialGridHelp, :row_spacing, 10)
+        set_gtk_property!(rawmaterialGridHelp, :margin_top, 5)
+        set_gtk_property!(rawmaterialGridHelp, :margin_bottom, 10)
+        set_gtk_property!(rawmaterialGridHelp, :margin_left, 10)
+        set_gtk_property!(rawmaterialGridHelp, :margin_right, 10)
 
-        metricsFrameTreeH = Frame()
-        set_gtk_property!(metricsFrameTreeH, :width_request, h/2.5 - 20)
-        set_gtk_property!(metricsFrameTreeH, :height_request, h/2 - 30 - 60)
+        rawmaterialFrameTreeH = Frame()
+        set_gtk_property!(rawmaterialFrameTreeH, :width_request, h/2.5 - 20)
+        set_gtk_property!(rawmaterialFrameTreeH, :height_request, h/2 - 30 - 60)
 
-        metricsScrollH = ScrolledWindow()
-        push!(metricsFrameTreeH, metricsScrollH)
+        rawmaterialScrollH = ScrolledWindow()
+        push!(rawmaterialFrameTreeH, rawmaterialScrollH)
 
-        # Table for Metrics help
+        # Table for Rawmaterial help
         metList = ListStore(String, String, String)
 
         # Load data from listEqPhenomena
@@ -1107,21 +1107,21 @@ function mainPI()
             push!(metList, (listMet[i,1], listMet[i,2], string(listMet[i,3])))
         end
 
-        # Visual Table for Metrics help
-        metricsTreeViewH = TreeView(TreeModel(metList))
-        set_gtk_property!(metricsTreeViewH, :reorderable, true)
-        set_gtk_property!(metricsTreeViewH, :enable_grid_lines, 3)
+        # Visual Table for Rawmaterial help
+        rawmaterialTreeViewH = TreeView(TreeModel(metList))
+        set_gtk_property!(rawmaterialTreeViewH, :reorderable, true)
+        set_gtk_property!(rawmaterialTreeViewH, :enable_grid_lines, 3)
 
         # Set selectable
-        selMetHelp = Gtk.GAccessor.selection(metricsTreeViewH)
+        selMetHelp = Gtk.GAccessor.selection(rawmaterialTreeViewH)
         selMetHelp = Gtk.GAccessor.mode(selMetHelp, Gtk.GConstants.GtkSelectionMode.SINGLE)
-        selMetHelp = G_.selection(metricsTreeViewH)
+        selMetHelp = G_.selection(rawmaterialTreeViewH)
 
         renderTxtMet = CellRendererText()
         set_gtk_property!(renderTxtMet, :editable, false)
 
         c1 = TreeViewColumn("ID", renderTxtMet, Dict([("text", 0)]))
-        c2 = TreeViewColumn("Metric", renderTxtMet, Dict([("text", 1)]))
+        c2 = TreeViewColumn("RawMaterial", renderTxtMet, Dict([("text", 1)]))
         c3 = TreeViewColumn("Symbol", renderTxtMet, Dict([("text", 2)]))
 
         # Allows to select rows
@@ -1129,22 +1129,22 @@ function mainPI()
             Gtk.GAccessor.resizable(c, true)
         end
 
-        push!(metricsTreeViewH, c1, c2, c3)
-        push!(metricsScrollH, metricsTreeViewH)
+        push!(rawmaterialTreeViewH, c1, c2, c3)
+        push!(rawmaterialScrollH, rawmaterialTreeViewH)
 
-        metricsClose = Button("Close")
-        set_gtk_property!(metricsClose, :label, "Close")
-        set_gtk_property!(metricsClose, :tooltip_markup, "Close")
-        signal_connect(metricsClose, :clicked) do widget
-            destroy(metricsHelpWin)
+        rawmaterialClose = Button("Close")
+        set_gtk_property!(rawmaterialClose, :label, "Close")
+        set_gtk_property!(rawmaterialClose, :tooltip_markup, "Close")
+        signal_connect(rawmaterialClose, :clicked) do widget
+            destroy(rawmaterialHelpWin)
         end
 
-        metricsAdd = Button("Add")
-        set_gtk_property!(metricsAdd, :label, "Add")
-        set_gtk_property!(metricsAdd, :tooltip_markup, "Add")
-        signal_connect(metricsAdd, :clicked) do widget
+        rawmaterialAdd = Button("Add")
+        set_gtk_property!(rawmaterialAdd, :label, "Add")
+        set_gtk_property!(rawmaterialAdd, :tooltip_markup, "Add")
+        signal_connect(rawmaterialAdd, :clicked) do widget
             currentID = selected(selMetHelp)
-            push!(metricsList, (metList[currentID, 1], metList[currentID, 2], metList[currentID, 3], "not specified"))
+            push!(rawmaterialList, (metList[currentID, 1], metList[currentID, 2], metList[currentID, 3], "not specified"))
             set_gtk_property!(clearMet, :sensitive, true)
             set_gtk_property!(deleteMet, :sensitive, true)
 
@@ -1152,27 +1152,27 @@ function mainPI()
             baseCaseList[newidxBC, 4] = "Incomplete"
             dictMet["$(baseCaseList[newidxBC,2])"] = []
 
-            testMet = zeros(1, length(metricsList))
-            for i = 1:length(metricsList)
-                push!(dictMet["$(baseCaseList[newidxBC,2])"], (metricsList[i, 1], metricsList[i, 2], metricsList[i, 3], metricsList[i, 4]))
+            testMet = zeros(1, length(rawmaterialList))
+            for i = 1:length(rawmaterialList)
+                push!(dictMet["$(baseCaseList[newidxBC,2])"], (rawmaterialList[i, 1], rawmaterialList[i, 2], rawmaterialList[i, 3], rawmaterialList[i, 4]))
 
-                if (metricsList[i, 1] == "not specified") || (metricsList[i, 4] == "not specified")
+                if (rawmaterialList[i, 1] == "not specified") || (rawmaterialList[i, 4] == "not specified")
                     testMet[i] = 1
                 end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(metricsList) >= 1
+            if length(rawmaterialList) >= 1
                 if sum(testMet) == 0
-                    baseCaseList[newidxBC, 4] = @sprintf("Metrics = %i, Complete", length(metricsList))
+                    baseCaseList[newidxBC, 4] = @sprintf("Rawmaterial = %i, Complete", length(rawmaterialList))
                 end
             end
         end
 
-        signal_connect(metricsTreeViewH, :row_activated) do widget, path, column
+        signal_connect(rawmaterialTreeViewH, :row_activated) do widget, path, column
             currentID = selected(selMetHelp)
-            push!(metricsList, (metList[currentID,1], metList[currentID,2], metList[currentID,3], "not specified"))
+            push!(rawmaterialList, (metList[currentID,1], metList[currentID,2], metList[currentID,3], "not specified"))
             set_gtk_property!(clearMet, :sensitive, true)
             set_gtk_property!(deleteMet, :sensitive, true)
 
@@ -1181,38 +1181,38 @@ function mainPI()
 
             dictMet["$(baseCaseList[newidxBC,2])"] = []
 
-            testMet = zeros(1, length(metricsList))
-            for i = 1:length(metricsList)
-                push!(dictMet["$(baseCaseList[newidxBC,2])"], (metricsList[i, 1], metricsList[i, 2], metricsList[i, 3], metricsList[i, 4]))
+            testMet = zeros(1, length(rawmaterialList))
+            for i = 1:length(rawmaterialList)
+                push!(dictMet["$(baseCaseList[newidxBC,2])"], (rawmaterialList[i, 1], rawmaterialList[i, 2], rawmaterialList[i, 3], rawmaterialList[i, 4]))
 
-                if (metricsList[i, 1] == "not specified") || (metricsList[i, 4] == "not specified")
+                if (rawmaterialList[i, 1] == "not specified") || (rawmaterialList[i, 4] == "not specified")
                     testMet[i] = 1
                 end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(metricsList) >= 1
+            if length(rawmaterialList) >= 1
                 if sum(testMet) == 0
-                    baseCaseList[newidxBC, 4] = @sprintf("Metrics = %i, Complete", length(metricsList))
+                    baseCaseList[newidxBC, 4] = @sprintf("Rawmaterial = %i, Complete", length(rawmaterialList))
                 end
             end
         end
 
-        metricsGridHelp[1, 2] = metricsAdd
-        metricsGridHelp[2, 2] = metricsClose
-        metricsGridHelp[1:2, 1] = metricsFrameTreeH
-        push!(metricsFrameHelp, metricsGridHelp)
-        push!(metricsHelpWin, metricsFrameHelp)
-        Gtk.showall(metricsHelpWin)
+        rawmaterialGridHelp[1, 2] = rawmaterialAdd
+        rawmaterialGridHelp[2, 2] = rawmaterialClose
+        rawmaterialGridHelp[1:2, 1] = rawmaterialFrameTreeH
+        push!(rawmaterialFrameHelp, rawmaterialGridHelp)
+        push!(rawmaterialHelpWin, rawmaterialFrameHelp)
+        Gtk.showall(rawmaterialHelpWin)
     end
 
-    metricsGrid[1, 2] = addMet
-    metricsGrid[2, 2] = deleteMet
-    metricsGrid[3, 2] = clearMet
-    metricsGrid[4, 2] = helpMet
+    rawmaterialGrid[1, 2] = addMet
+    rawmaterialGrid[2, 2] = deleteMet
+    rawmaterialGrid[3, 2] = clearMet
+    rawmaterialGrid[4, 2] = helpMet
 
-    push!(metricsFrame, metricsGrid)
+    push!(rawmaterialFrame, rawmaterialGrid)
     ####################################################################################################################
 
     ####################################################################################################################
@@ -1630,7 +1630,7 @@ function mainPI()
 
 
     push!(equitMetNotebook, equipmentFrame, "Equipment")
-    push!(equitMetNotebook, metricsFrame, "Metrics")
+    push!(equitMetNotebook, rawmaterialFrame, "Rawmaterial")
 
     ####################################################################################################################
     settingGridLeft[1, 1] = baseCaseFrame
@@ -1673,7 +1673,7 @@ function mainPI()
     # Table for Case Design
     ibaseCaseList = ListStore(String, String, String, String, String, String)
 
-    push!(ibaseCaseList, ("Int/Base Case", "Equipment", "Metrics", "Criterion", "Solved"))
+    push!(ibaseCaseList, ("Int/Base Case", "Equipment", "Rawmaterial", "Criterion", "Solved"))
 
     # Visual Table for Case Design
     ibaseCaseTreeView = TreeView(TreeModel(ibaseCaseList))
@@ -1694,7 +1694,7 @@ function mainPI()
     c1 = TreeViewColumn("ID", renderTxti2, Dict([("text", 0)]))
     c2 = TreeViewColumn("Name", renderTxti1, Dict([("text", 1)]))
     c3 = TreeViewColumn("Equipments", renderTxti2, Dict([("text", 2)]))
-    c4 = TreeViewColumn("Metrics", renderTxti2, Dict([("text", 3)]))
+    c4 = TreeViewColumn("Rawmaterial", renderTxti2, Dict([("text", 3)]))
     c5 = TreeViewColumn("Criterion", renderTxti2, Dict([("text", 4)]))
     c6 = TreeViewColumn("Status", renderTxti2, Dict([("text", 5)]))
     for c in [c1, c2, c3, c4, c5, c6]
