@@ -2,43 +2,47 @@
 if Sys.iswindows()
     # Icons path on Windows
     global ico1 = joinpath(dirname(Base.source_path()), "icons\\icon_new.ico")
-    global ico2 = joinpath(dirname(Base.source_path()), "icons\\icon_export.ico")
+    global ico2 = joinpath(dirname(Base.source_path()), "icons\\icon_pdf.ico")
     global ico3 = joinpath(dirname(Base.source_path()), "icons\\icon_close.ico")
-    global ico4 = joinpath(dirname(Base.source_path()), "icons\\icon_help.ico")
-    global ico5 = joinpath(dirname(Base.source_path()), "icons\\icon_open.ico")
-    global ico6 = joinpath(dirname(Base.source_path()), "icons\\icon_save.ico")
-    global ico7 = joinpath(dirname(Base.source_path()), "icons\\icon_run.ico")
+    global ico4 = joinpath(dirname(Base.source_path()), "icons\\icon_settings.ico")
+    global ico5 = joinpath(dirname(Base.source_path()), "icons\\icon_help.ico")
+    global ico6 = joinpath(dirname(Base.source_path()), "icons\\icon_open.ico")
+    global ico7 = joinpath(dirname(Base.source_path()), "icons\\icon_save.ico")
+    global ico8 = joinpath(dirname(Base.source_path()), "icons\\icon_run.png")
 end
 
 if Sys.islinux()
     # Icons path on Linux
     global ico1 = joinpath(dirname(Base.source_path()), "icons/icon_new.ico")
-    global ico2 = joinpath(dirname(Base.source_path()), "icons/icon_export.ico")
+    global ico2 = joinpath(dirname(Base.source_path()), "icons/icon_pdf.ico")
     global ico3 = joinpath(dirname(Base.source_path()), "icons/icon_close.ico")
-    global ico4 = joinpath(dirname(Base.source_path()), "icons/icon_help.ico")
-    global ico5 = joinpath(dirname(Base.source_path()), "icons/icon_open.ico")
-    global ico6 = joinpath(dirname(Base.source_path()), "icons/icon_save.ico")
-    global ico7 = joinpath(dirname(Base.source_path()), "icons/icon_run.ico")
+    global ico4 = joinpath(dirname(Base.source_path()), "icons/icon_settings.ico")
+    global ico5 = joinpath(dirname(Base.source_path()), "icons/icon_help.ico")
+    global ico6 = joinpath(dirname(Base.source_path()), "icons/icon_open.ico")
+    global ico7 = joinpath(dirname(Base.source_path()), "icons/icon_save.ico")
+    global ico8 = joinpath(dirname(Base.source_path()), "icons/icon_run.png")
 end
 
-function mainBio()
+# TODO: check compatibility to macOS
+
+function mainPI()
     ENV["GTK_CSD"] = 0
 
     # Measurement of screen size to allow compatibility to all screen devices
     global w, h = screen_size()
 
     # Main win
-   mainBioWin = Window()
-   # Properties for mainWin
-   set_gtk_property!(mainBioWin, :title, "Interface Biomasa")
-   set_gtk_property!(mainBioWin, :window_position, 3)
-   set_gtk_property!(mainBioWin, :accept_focus, true)
-   set_gtk_property!(mainBioWin, :resizable, false)
-   set_gtk_property!(mainBioWin, :width_request, h * 1.0)
-   set_gtk_property!(mainBioWin, :height_request, h * 0.70 - 10)
-   set_gtk_property!(mainBioWin, :visible, false)
+    mainPIWin = Window()
+    # Properties for mainWin
+    set_gtk_property!(mainPIWin, :title, "Process Intensification Assistant")
+    set_gtk_property!(mainPIWin, :window_position, 3)
+    set_gtk_property!(mainPIWin, :accept_focus, true)
+    set_gtk_property!(mainPIWin, :resizable, false)
+    set_gtk_property!(mainPIWin, :width_request, h * 1.0)
+    set_gtk_property!(mainPIWin, :height_request, h * 0.70 - 10)
+    set_gtk_property!(mainPIWin, :visible, false)
 
-   ####################################################################################################################
+    ####################################################################################################################
     # Toolbar
     ####################################################################################################################
     # Menu Icons
@@ -49,21 +53,28 @@ function mainBio()
     set_gtk_property!(newToolbar, :label, "New")
     set_gtk_property!(newToolbar, :tooltip_markup, "New analysis")
 
-    exportToolbar = ToolButton("")
-    exportToolbarImg = Image()
-    set_gtk_property!(exportToolbarImg, :file, ico2)
-    set_gtk_property!(exportToolbar, :icon_widget, exportToolbarImg)
-    set_gtk_property!(exportToolbar, :label, "Export")
-    set_gtk_property!(exportToolbar, :tooltip_markup, "Export report")
-    #set_gtk_property!(exportToolbar, :sensitive, false)
+    pdfToolbar = ToolButton("")
+    pdfToolbarImg = Image()
+    set_gtk_property!(pdfToolbarImg, :file, ico2)
+    set_gtk_property!(pdfToolbar, :icon_widget, pdfToolbarImg)
+    set_gtk_property!(pdfToolbar, :label, "Export")
+    set_gtk_property!(pdfToolbar, :tooltip_markup, "Export report")
+    set_gtk_property!(pdfToolbar, :sensitive, false)
 
     runToolbar = ToolButton("")
     runToolbarImg = Image()
-    set_gtk_property!(runToolbarImg, :file, ico7)
+    set_gtk_property!(runToolbarImg, :file, ico8)
     set_gtk_property!(runToolbar, :icon_widget, runToolbarImg)
-    set_gtk_property!(runToolbar, :label, "Run")
-    set_gtk_property!(runToolbar, :tooltip_markup, "Run")
+    set_gtk_property!(runToolbar, :label, "Solve")
+    set_gtk_property!(runToolbar, :tooltip_markup, "Solve")
     set_gtk_property!(runToolbar, :sensitive, true)
+
+    settingsToolbar = ToolButton("")
+    settingsToolbarImg = Image()
+    set_gtk_property!(settingsToolbarImg, :file, ico4)
+    set_gtk_property!(settingsToolbar, :icon_widget, settingsToolbarImg)
+    set_gtk_property!(settingsToolbar, :label, "Settings")
+    set_gtk_property!(settingsToolbar, :tooltip_markup, "Settings")
 
     closeToolbar = ToolButton("")
     closeToolbarImg = Image()
@@ -72,32 +83,32 @@ function mainBio()
     set_gtk_property!(closeToolbar, :label, "Close")
     set_gtk_property!(closeToolbar, :tooltip_markup, "Close")
     signal_connect(closeToolbar, :clicked) do widget
-        destroy(mainBioWin)
+        destroy(mainPIWin)
     end
 
-    signal_connect(mainBioWin, "key-press-event") do widget, event
+    signal_connect(mainPIWin, "key-press-event") do widget, event
         if event.keyval == 65307
-            destroy(mainBioWin)
+            destroy(mainPIWin)
         end
     end
 
     helpToolbar = ToolButton("")
     helpToolbarImg = Image()
-    set_gtk_property!(helpToolbarImg, :file, ico4)
+    set_gtk_property!(helpToolbarImg, :file, ico5)
     set_gtk_property!(helpToolbar, :icon_widget, helpToolbarImg)
     set_gtk_property!(helpToolbar, :label, "Help")
     set_gtk_property!(helpToolbar, :tooltip_markup, "Help")
 
     openToolbar = ToolButton("")
     openToolbarImg = Image()
-    set_gtk_property!(openToolbarImg, :file, ico5)
+    set_gtk_property!(openToolbarImg, :file, ico6)
     set_gtk_property!(openToolbar, :icon_widget, openToolbarImg)
     set_gtk_property!(openToolbar, :label, "Open")
     set_gtk_property!(openToolbar, :tooltip_markup, "Open")
 
     saveToolbar = ToolButton("")
     saveToolbarImg = Image()
-    set_gtk_property!(saveToolbarImg, :file, ico6)
+    set_gtk_property!(saveToolbarImg, :file, ico7)
     set_gtk_property!(saveToolbar, :icon_widget, saveToolbarImg)
     set_gtk_property!(saveToolbar, :label, "Save")
     set_gtk_property!(saveToolbar, :tooltip_markup, "Save")
@@ -110,10 +121,11 @@ function mainBio()
     push!(mainToolbar, newToolbar)
     push!(mainToolbar, SeparatorToolItem())
     push!(mainToolbar, openToolbar)
-    push!(mainToolbar, exportToolbar)
+    push!(mainToolbar, pdfToolbar)
     push!(mainToolbar, saveToolbar)
     push!(mainToolbar, SeparatorToolItem())
     push!(mainToolbar, runToolbar)
+    push!(mainToolbar, settingsToolbar)
     push!(mainToolbar, helpToolbar)
     push!(mainToolbar, SeparatorToolItem())
     push!(mainToolbar, closeToolbar)
@@ -1693,7 +1705,7 @@ function mainBio()
 
     println(111)
     push!(ibaseCaseScroll, ibaseCaseTreeView)
-    push!(ibaseCaseFrameTreeh, ibaseCaseScroll)
+    push!(ibaseCaseFrameTree, ibaseCaseScroll)
     resultsGrid[1,1] = resultsGridLeft
     resultsGridLeft[1,1] = ibaseCaseFrameTree
 
@@ -1709,7 +1721,6 @@ function mainBio()
     mainGrid[1, 1] = gridToolbar
     mainGrid[1, 2] = bGrid
 
-    push!(mainBioWin, mainGrid)
-    Gtk.showall(mainBioWin)
-
+    push!(mainPIWin, mainGrid)
+    Gtk.showall(mainPIWin)
 end

@@ -55,5 +55,5 @@ function BiomassGUI()
     sleep(3)
     destroy(winIndex)
 
-    mainBio()
+    mainPI()
 end

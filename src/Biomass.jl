@@ -6,11 +6,12 @@ module Biomass
     #PhD. ELías Martínez Hernández
 
     #Function to call the GUI
-    export mainBio
+    export mainPI
     export BiomassGUI
 
     #Include the main file  .fl
     #include("BiomassGUI.jl")
     include("index.jl")
     include("main.jl")
+    
 end #module
