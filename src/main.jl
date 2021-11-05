@@ -8,7 +8,7 @@ if Sys.iswindows()
     global ico5 = joinpath(dirname(Base.source_path()), "icons\\icon_help.ico")
     global ico6 = joinpath(dirname(Base.source_path()), "icons\\icon_open.ico")
     global ico7 = joinpath(dirname(Base.source_path()), "icons\\icon_save.ico")
-    global ico8 = joinpath(dirname(Base.source_path()), "icons\\icon_run.png")
+    global ico8 = joinpath(dirname(Base.source_path()), "icons\\icon_run.ico")
 end
 
 if Sys.islinux()
@@ -20,7 +20,7 @@ if Sys.islinux()
     global ico5 = joinpath(dirname(Base.source_path()), "icons/icon_help.ico")
     global ico6 = joinpath(dirname(Base.source_path()), "icons/icon_open.ico")
     global ico7 = joinpath(dirname(Base.source_path()), "icons/icon_save.ico")
-    global ico8 = joinpath(dirname(Base.source_path()), "icons/icon_run.png")
+    global ico8 = joinpath(dirname(Base.source_path()), "icons/icon_run.ico")
 end
 
 # TODO: check compatibility to macOS
