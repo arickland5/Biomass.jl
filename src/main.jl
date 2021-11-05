@@ -34,7 +34,7 @@ function mainPI()
     # Main win
     mainPIWin = Window()
     # Properties for mainWin
-    set_gtk_property!(mainPIWin, :title, "Interface Biomass")
+    set_gtk_property!(mainPIWin, :title, "Interfase Biomass")
     set_gtk_property!(mainPIWin, :window_position, 3)
     set_gtk_property!(mainPIWin, :accept_focus, true)
     set_gtk_property!(mainPIWin, :resizable, false)
@@ -51,14 +51,14 @@ function mainPI()
     set_gtk_property!(newToolbarImg, :file, ico1)
     set_gtk_property!(newToolbar, :icon_widget, newToolbarImg)
     set_gtk_property!(newToolbar, :label, "New")
-    set_gtk_property!(newToolbar, :tooltip_markup, "New analysis")
+    set_gtk_property!(newToolbar, :tooltip_markup, "New case study")
 
     pdfToolbar = ToolButton("")
     pdfToolbarImg = Image()
     set_gtk_property!(pdfToolbarImg, :file, ico2)
     set_gtk_property!(pdfToolbar, :icon_widget, pdfToolbarImg)
     set_gtk_property!(pdfToolbar, :label, "Export")
-    set_gtk_property!(pdfToolbar, :tooltip_markup, "Export report")
+    set_gtk_property!(pdfToolbar, :tooltip_markup, "Export")
     set_gtk_property!(pdfToolbar, :sensitive, false)
 
     runToolbar = ToolButton("")
@@ -185,7 +185,7 @@ function mainPI()
     global idxEq = zeros(1, idxBC)
     global dictBC = Dict()
 
-    baseCaseFrame = Frame(" Base Case Design ")
+    baseCaseFrame = Frame(" Process ")
     set_gtk_property!(baseCaseFrame, :height_request, (hNb - 30)/2)
     set_gtk_property!(baseCaseFrame, :width_request, (h / 2) - 15)
     set_gtk_property!(baseCaseFrame, :label_xalign, 0.50)
@@ -227,8 +227,8 @@ function mainPI()
 
     c1 = TreeViewColumn("ID", renderTxt2, Dict([("text", 0)]))
     c2 = TreeViewColumn("Name", renderTxt1, Dict([("text", 1)]))
-    c3 = TreeViewColumn("Equipments", renderTxt2, Dict([("text", 2)]))
-    c4 = TreeViewColumn("Metrics", renderTxt2, Dict([("text", 3)]))
+    c3 = TreeViewColumn("Process", renderTxt2, Dict([("text", 2)]))
+    c4 = TreeViewColumn("Raw material", renderTxt2, Dict([("text", 3)]))
     c5 = TreeViewColumn("Criterion", renderTxt2, Dict([("text", 4)]))
     c6 = TreeViewColumn("Status", renderTxt2, Dict([("text", 5)]))
 
@@ -263,7 +263,7 @@ function mainPI()
         set_gtk_property!(addCr, :sensitive, true)
         set_gtk_property!(helpCr, :sensitive, true)
 
-        empty!(equipmentList)
+        empty!(processList)
         empty!(metricsList)
         empty!(criterionList)
 
@@ -278,7 +278,7 @@ function mainPI()
 
         for i = 1:newSel
             push!(
-                equipmentList,
+                processList,
                 (
                 dictEq["$(baseCaseList[currentID, 2])"][i][1],
                 dictEq["$(baseCaseList[currentID, 2])"][i][2],
@@ -390,7 +390,7 @@ function mainPI()
             delete!(dictMet, baseCaseList[currentID, 2])
             delete!(dictCriteriaM, baseCaseList[currentID, 2])
             deleteat!(baseCaseList, currentID)
-            empty!(equipmentList)
+            empty!(processList)
             empty!(metricsList)
             empty!(criterionList)
 
@@ -401,7 +401,7 @@ function mainPI()
             if length(baseCaseList)==0
                 global idxBC = 1
                 empty!(baseCaseList)
-                empty!(equipmentList)
+                empty!(processList)
                 empty!(metricsList)
                 empty!(criterionList)
                 set_gtk_property!(clearBC, :sensitive, false)
@@ -431,7 +431,7 @@ function mainPI()
     set_gtk_property!(clearBC, :sensitive, false)
     signal_connect(clearBC, :clicked) do widget
         empty!(baseCaseList)
-        empty!(equipmentList)
+        empty!(processList)
         empty!(metricsList)
         empty!(criterionList)
         set_gtk_property!(clearBC, :sensitive, false)
@@ -485,7 +485,7 @@ function mainPI()
     global dictEq = Dict()
 
     # Add avilable aquipments and phenomenas
-    push!(listEqPhenomena, (1, "Batch Reactor", ["M" "R" "H/C"]))
+    push!(listEqPhenomena, (1, "Jet Fuel",["JF"]))
     push!(listEqPhenomena, (2, "Semi-Batch Reactor", ["M" "R" "H/C"]))
     push!(listEqPhenomena, (3, "CSTR Reactor", ["M" "R" "H/C"]))
     push!(listEqPhenomena, (4, "PFR Reactor", ["M" "R" "H/C"]))
@@ -542,10 +542,10 @@ function mainPI()
     push!(equipmentFrameTree, equipmentScroll)
 
     # Table for Case Design
-    equipmentList = ListStore(String, String, String)
+    processList = ListStore(String, String, String)
 
     # Visual Table for Case Design
-    equipmentTreeView = TreeView(TreeModel(equipmentList))
+    equipmentTreeView = TreeView(TreeModel(processList))
     set_gtk_property!(equipmentTreeView, :reorderable, true)
     set_gtk_property!(equipmentTreeView, :enable_grid_lines, 3)
 
@@ -559,7 +559,7 @@ function mainPI()
     set_gtk_property!(renderTxt4, :editable, false)
 
     c1 = TreeViewColumn("ID", renderTxt3, Dict([("text", 0)]))
-    c2 = TreeViewColumn("Equipment", renderTxt4, Dict([("text", 1)]))
+    c2 = TreeViewColumn("Process", renderTxt4, Dict([("text", 1)]))
     c3 = TreeViewColumn("Phenomena", renderTxt4, Dict([("text", 2)]))
 
     # Allows to select rows
@@ -578,30 +578,30 @@ function mainPI()
         idxIDEq = parse(Int, text)
 
         if idxIDEq >= 1 && idxIDEq <= 28
-            equipmentList[idxTreeEq, 1] = text
-            equipmentList[idxTreeEq, 2] = listEqPhenomena[idxIDEq, 2]
-            equipmentList[idxTreeEq, 3] = string(listEqPhenomena[idxIDEq, 3])
+            processList[idxTreeEq, 1] = text
+            processList[idxTreeEq, 2] = listEqPhenomena[idxIDEq, 2]
+            processList[idxTreeEq, 3] = string(listEqPhenomena[idxIDEq, 3])
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictEq["$(baseCaseList[newidxBC,2])"] = []
 
-            testEq = zeros(1, length(equipmentList))
-            for i = 1:length(equipmentList)
+            testEq = zeros(1, length(processList))
+            for i = 1:length(processList)
                 push!(
                     dictEq["$(baseCaseList[newidxBC,2])"],
-                    (equipmentList[i, 1], equipmentList[i, 2], equipmentList[i, 3]),
+                    (processList[i, 1], processList[i, 2], processList[i, 3]),
                     )
 
-                    if equipmentList[i, 1] == "not specified"
+                    if processList[i, 1] == "not specified"
                         testEq[i] = 1
                     end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(equipmentList) >= 2
+            if length(processList) >= 2
                 if sum(testEq) == 0
-                    baseCaseList[newidxBC, 3] = @sprintf("Equipments = %i, Complete", length(equipmentList))
+                    baseCaseList[newidxBC, 3] = @sprintf("Process = %i, Complete", length(processList))
                 end
             end
 
@@ -615,7 +615,7 @@ function mainPI()
     set_gtk_property!(addEq, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(addEq, :sensitive, false)
     signal_connect(addEq, :clicked) do widget
-         push!(equipmentList, ("not specified", "not specified", "not specified"))
+         push!(processList, ("not specified", "not specified", "not specified"))
          set_gtk_property!(clearEq, :sensitive, true)
          set_gtk_property!(deleteEq, :sensitive, true)
 
@@ -632,19 +632,19 @@ function mainPI()
     signal_connect(deleteEq, :clicked) do widget
         if hasselection(selmodelequipment)
             currentID = selected(selmodelequipment)
-            newidxBC = Gtk.index_from_iter(equipmentList, selected(selmodelequipment))
-            deleteat!(equipmentList, currentID)
+            newidxBC = Gtk.index_from_iter(processList, selected(selmodelequipment))
+            deleteat!(processList, currentID)
 
             currentIDBC = selected(selBC)
             nameBCSel = baseCaseList[currentIDBC, 2]
             dictEq[nameBCSel] = deleteat!(dictEq[nameBCSel], newidxBC)
 
-            if length(equipmentList)==0
+            if length(processList)==0
                 set_gtk_property!(deleteEq, :sensitive, false)
                 set_gtk_property!(clearEq, :sensitive, false)
             end
 
-            if length(equipmentList) < 2
+            if length(processList) < 2
                 newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
                 baseCaseList[newidxBC, 3] = "Incomplete"
             end
@@ -652,23 +652,23 @@ function mainPI()
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictEq["$(baseCaseList[newidxBC,2])"] = []
 
-            testEq = zeros(1, length(equipmentList))
-            for i = 1:length(equipmentList)
+            testEq = zeros(1, length(processList))
+            for i = 1:length(processList)
                 push!(
                     dictEq["$(baseCaseList[newidxBC,2])"],
-                    (equipmentList[i, 1], equipmentList[i, 2], equipmentList[i, 3]),
+                    (processList[i, 1], processList[i, 2], processList[i, 3]),
                     )
 
-                    if equipmentList[i, 1] == "not specified"
+                    if processList[i, 1] == "not specified"
                         testEq[i] = 1
                     end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(equipmentList) >= 2
+            if length(processList) >= 2
                 if sum(testEq) == 0
-                    baseCaseList[newidxBC, 3] = @sprintf("Equipments= %i, Complete", length(equipmentList))
+                    baseCaseList[newidxBC, 3] = @sprintf("Proccess= %i, Complete", length(processList))
                 end
             end
 
@@ -682,7 +682,7 @@ function mainPI()
         currentIDBC = selected(selBC)
         nameBCSel = baseCaseList[currentIDBC, 2]
         dictEq[nameBCSel] = []
-        empty!(equipmentList)
+        empty!(processList)
         set_gtk_property!(clearEq, :sensitive, false)
         set_gtk_property!(deleteEq, :sensitive, false)
 
@@ -696,13 +696,13 @@ function mainPI()
     signal_connect(helpEq, :clicked) do widget
         # Equipment Help Win
         eqHelpWin = Window()
-        set_gtk_property!(eqHelpWin, :title, "Equiptment Help")
+        set_gtk_property!(eqHelpWin, :title, "Process Help")
         set_gtk_property!(eqHelpWin, :window_position, 3)
         set_gtk_property!(eqHelpWin, :accept_focus, true)
         set_gtk_property!(eqHelpWin, :resizable, false)
         set_gtk_property!(eqHelpWin, :width_request, h/2.5)
 
-        eqFrameHelp = Frame("Equipment evailable")
+            eqFrameHelp = Frame("Process evailable")
         set_gtk_property!(eqFrameHelp, :label_xalign, 0.5)
         set_gtk_property!(eqFrameHelp, :margin_top, 5)
         set_gtk_property!(eqFrameHelp, :margin_bottom, 10)
@@ -747,7 +747,7 @@ function mainPI()
         set_gtk_property!(renderTxteq, :editable, false)
 
         c1 = TreeViewColumn("ID", renderTxteq, Dict([("text", 0)]))
-        c2 = TreeViewColumn("Equipment", renderTxteq, Dict([("text", 1)]))
+        c2 = TreeViewColumn("Process", renderTxteq, Dict([("text", 1)]))
         c3 = TreeViewColumn("Phenomena", renderTxteq, Dict([("text", 2)]))
 
         # Allows to select rows
@@ -770,54 +770,54 @@ function mainPI()
         set_gtk_property!(eqAdd, :tooltip_markup, "Add")
         signal_connect(eqAdd, :clicked) do widget
             currentID = selected(selEqHelp)
-            push!(equipmentList, (eqList[currentID, 1], eqList[currentID, 2], eqList[currentID, 3]))
+            push!(processList, (eqList[currentID, 1], eqList[currentID, 2], eqList[currentID, 3]))
             set_gtk_property!(clearEq, :sensitive, true)
             set_gtk_property!(deleteEq, :sensitive, true)
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictEq["$(baseCaseList[newidxBC,2])"] = []
 
-            testEq = zeros(1, length(equipmentList))
-            for i = 1:length(equipmentList)
-                push!(dictEq["$(baseCaseList[newidxBC,2])"], (equipmentList[i, 1], equipmentList[i, 2], equipmentList[i, 3]))
+            testEq = zeros(1, length(processList))
+            for i = 1:length(processList)
+                push!(dictEq["$(baseCaseList[newidxBC,2])"], (processList[i, 1], processList[i, 2], processList[i, 3]))
 
-                if equipmentList[i, 1] == "not specified"
+                if processList[i, 1] == "not specified"
                     testEq[i] = 1
                 end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(equipmentList) >= 2
+            if length(processList) >= 2
                 if sum(testEq) == 0
-                    baseCaseList[newidxBC, 3] = @sprintf("Equipments = %i, Complete", length(equipmentList))
+                    baseCaseList[newidxBC, 3] = @sprintf("Process = %i, Complete", length(processList))
                 end
             end
         end
 
         signal_connect(eqTreeView, :row_activated) do widget, path, column
             currentID = selected(selEqHelp)
-            push!(equipmentList, (eqList[currentID,1], eqList[currentID,2], eqList[currentID,3]))
+            push!(processList, (eqList[currentID,1], eqList[currentID,2], eqList[currentID,3]))
             set_gtk_property!(clearEq, :sensitive, true)
             set_gtk_property!(deleteEq, :sensitive, true)
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selBC))
             dictEq["$(baseCaseList[newidxBC,2])"] = []
 
-            testEq = zeros(1, length(equipmentList))
-            for i = 1:length(equipmentList)
-                push!(dictEq["$(baseCaseList[newidxBC,2])"], (equipmentList[i, 1], equipmentList[i, 2], equipmentList[i, 3]))
+            testEq = zeros(1, length(processList))
+            for i = 1:length(processList)
+                push!(dictEq["$(baseCaseList[newidxBC,2])"], (processList[i, 1], processList[i, 2], processList[i, 3]))
 
-                if equipmentList[i, 1] == "not specified"
+                if processList[i, 1] == "not specified"
                     testEq[i] = 1
                 end
             end
 
             newidxBC = Gtk.index_from_iter(baseCaseList, selected(selmodelBaseCase))
 
-            if length(equipmentList) >= 2
+            if length(processList) >= 2
                 if sum(testEq) == 0
-                    baseCaseList[newidxBC, 3] = @sprintf("Equipments= %i, Complete", length(equipmentList))
+                    baseCaseList[newidxBC, 3] = @sprintf("Process= %i, Complete", length(processList))
                 end
             end
         end
@@ -843,8 +843,8 @@ function mainPI()
     global dictMet = Dict()
 
     # Add avilable aquipments and phenomenas
-    push!(listMet, (1, "Operating cost", "OC", "not specified"))
-    push!(listMet, (2, "Purchase cost", "PC", "not specified"))
+    push!(listMet, (1, "Palm oil", "PO", "not specified"))
+    push!(listMet, (2, "Hydrogen", "H2", "not specified"))
     push!(listMet, (3, "Utility cost", "UC", "not specified"))
     push!(listMet, (4, "Profit", "Pr", "not specified"))
     push!(listMet, (5, "Return on investment", "ROI", "not specified"))
@@ -905,7 +905,7 @@ function mainPI()
     c1 = TreeViewColumn("ID", renderTxtM1, Dict([("text", 0)]))
     c2 = TreeViewColumn("Metric", renderTxtM2, Dict([("text", 1)]))
     c3 = TreeViewColumn("Symbol", renderTxtM2, Dict([("text", 2)]))
-    c4 = TreeViewColumn("Value", renderTxtM3, Dict([("text", 3)]))
+    c4 = TreeViewColumn("Value [Kg/h]", renderTxtM3, Dict([("text", 3)]))
 
     # Allows to select rows
     for c in [c1, c2, c3, c4]
@@ -1224,7 +1224,7 @@ function mainPI()
     global dictCriteriaM = Dict()
 
     # Add avilable aquipments and phenomenas
-    push!(listCriteriaM, (1, "Pressure"))
+    push!(listCriteriaM, (1, "Production cost"))
 
     criterionFrame = Frame(" Criterion ")
     set_gtk_property!(criterionFrame, :width_request, (h / 2) - 15)
@@ -1316,8 +1316,8 @@ function mainPI()
     signal_connect(criterionTreeView, :row_activated) do widget, path, column
         currentID = selected(selmodelcriterion)
 
-        for i=1:length(equipmentList)
-            push!(crSettList, (equipmentList[i,1], equipmentList[i,2], 0))
+        for i=1:length(processList)
+            push!(crSettList, (processList[i,1], processList[i,2], 0))
         end
     end
 
