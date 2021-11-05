@@ -34,7 +34,7 @@ function mainPI()
     # Main win
     mainPIWin = Window()
     # Properties for mainWin
-    set_gtk_property!(mainPIWin, :title, "Process Intensification Assistant")
+    set_gtk_property!(mainPIWin, :title, "Interface Biomass")
     set_gtk_property!(mainPIWin, :window_position, 3)
     set_gtk_property!(mainPIWin, :accept_focus, true)
     set_gtk_property!(mainPIWin, :resizable, false)
