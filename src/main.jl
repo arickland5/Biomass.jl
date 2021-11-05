@@ -465,7 +465,7 @@ function mainPI()
 
     push!(baseCaseFrame, baseCaseGrid)
 
-    ## Notebook for Equiptment and Criteria ############################################################################
+    ## Notebook for Process and Raw Material ############################################################################
     equitMetFrame = Frame()
     if Sys.iswindows()
         set_gtk_property!(equitMetFrame, :height_request, (hNb - 30)/2 - 3)
@@ -480,7 +480,7 @@ function mainPI()
     push!(equitMetFrame, equitMetNotebook)
     ####################################################################################################################
 
-    # Equipment ########################################################################################################
+    # Process ########################################################################################################
     global listEqPhenomena = DataFrames.DataFrame(ID = Float64[], Name = String[], Phenomena = Array[])
     global dictEq = Dict()
 
@@ -514,43 +514,43 @@ function mainPI()
     push!(listEqPhenomena, (27, "Liquid-Liquid Extraction with Reaction", ["M", "R", "PC", "PS"]))
     push!(listEqPhenomena, (28, "Reactive Crystallization", ["2phM", "R", "C", "PC", "PT", "PS"]))
 
-    equipmentFrame = Frame()
-    set_gtk_property!(equipmentFrame, :width_request, (h / 2) - 15)
-    set_gtk_property!(equipmentFrame, :label_xalign, 0.50)
+    processFrame = Frame()
+    set_gtk_property!(processFrame, :width_request, (h / 2) - 15)
+    set_gtk_property!(processFrame, :label_xalign, 0.50)
 
-    equipmentGrid = Grid()
-    set_gtk_property!(equipmentGrid, :column_spacing, 10)
-    set_gtk_property!(equipmentGrid, :row_spacing, 10)
-    set_gtk_property!(equipmentGrid, :margin_top, 5)
-    set_gtk_property!(equipmentGrid, :margin_bottom, 10)
-    set_gtk_property!(equipmentGrid, :margin_left, 10)
-    set_gtk_property!(equipmentGrid, :margin_right, 10)
+    processGrid = Grid()
+    set_gtk_property!(processGrid, :column_spacing, 10)
+    set_gtk_property!(processGrid, :row_spacing, 10)
+    set_gtk_property!(processGrid, :margin_top, 5)
+    set_gtk_property!(processGrid, :margin_bottom, 10)
+    set_gtk_property!(processGrid, :margin_left, 10)
+    set_gtk_property!(processGrid, :margin_right, 10)
 
     # TreeView for Base Case Design
     wBC = (h / 2) - 15
-    equipmentFrameTree = Frame()
+    processFrameTree = Frame()
 
     if Sys.iswindows()
-        set_gtk_property!(equipmentFrameTree, :height_request, (hNb - 30)/2 - 110)
+        set_gtk_property!(processFrameTree, :height_request, (hNb - 30)/2 - 110)
     else
-        set_gtk_property!(equipmentFrameTree, :height_request, (hNb - 30)/2 - 101)
+        set_gtk_property!(processFrameTree, :height_request, (hNb - 30)/2 - 101)
     end
 
-    set_gtk_property!(equipmentFrameTree, :width_request, wBC - 20)
-    set_gtk_property!(equipmentFrameTree, :margin_top, 5)
-    equipmentScroll = ScrolledWindow()
-    push!(equipmentFrameTree, equipmentScroll)
+    set_gtk_property!(processFrameTree, :width_request, wBC - 20)
+    set_gtk_property!(processFrameTree, :margin_top, 5)
+    processScroll = ScrolledWindow()
+    push!(processFrameTree, processScroll)
 
     # Table for Case Design
     processList = ListStore(String, String, String)
 
     # Visual Table for Case Design
-    equipmentTreeView = TreeView(TreeModel(processList))
-    set_gtk_property!(equipmentTreeView, :reorderable, true)
-    set_gtk_property!(equipmentTreeView, :enable_grid_lines, 3)
+    processTreeView = TreeView(TreeModel(processList))
+    set_gtk_property!(processTreeView, :reorderable, true)
+    set_gtk_property!(processTreeView, :enable_grid_lines, 3)
 
     # Set selectable
-    selmodelequipment = G_.selection(equipmentTreeView)
+    selmodelprocess = G_.selection(processTreeView)
 
     renderTxt3 = CellRendererText()
     renderTxt4 = CellRendererText()
@@ -567,10 +567,10 @@ function mainPI()
         Gtk.GAccessor.resizable(c, true)
     end
 
-    push!(equipmentTreeView, c1, c2, c3)
-    push!(equipmentScroll, equipmentTreeView)
+    push!(processTreeView, c1, c2, c3)
+    push!(processScroll, processTreeView)
 
-    equipmentGrid[1:4, 1] = equipmentFrameTree
+    processGrid[1:4, 1] = processFrameTree
 
     # Edited
     signal_connect(renderTxt3, "edited") do widget, path, text
@@ -606,7 +606,7 @@ function mainPI()
             end
 
         else
-            warn_dialog("No equipment specified for option $(idxIDEq), see Help", mainPIWin)
+            warn_dialog("No process specified for option $(idxIDEq), see Help", mainPIWin)
         end
     end
 
@@ -630,9 +630,9 @@ function mainPI()
     set_gtk_property!(deleteEq, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(deleteEq, :sensitive, false)
     signal_connect(deleteEq, :clicked) do widget
-        if hasselection(selmodelequipment)
-            currentID = selected(selmodelequipment)
-            newidxBC = Gtk.index_from_iter(processList, selected(selmodelequipment))
+        if hasselection(selmodelprocess)
+            currentID = selected(selmodelprocess)
+            newidxBC = Gtk.index_from_iter(processList, selected(selmodelprocess))
             deleteat!(processList, currentID)
 
             currentIDBC = selected(selBC)
@@ -694,7 +694,7 @@ function mainPI()
     set_gtk_property!(helpEq, :width_request, (wBC - 5*10)/4)
     set_gtk_property!(helpEq, :sensitive, false)
     signal_connect(helpEq, :clicked) do widget
-        # Equipment Help Win
+        # Process Help Win
         eqHelpWin = Window()
         set_gtk_property!(eqHelpWin, :title, "Process Help")
         set_gtk_property!(eqHelpWin, :window_position, 3)
@@ -724,7 +724,7 @@ function mainPI()
         eqScroll = ScrolledWindow()
         push!(eqFrameTree, eqScroll)
 
-        # Table for Equipment help
+        # Table for Process help
         eqList = ListStore(Int, String, String)
 
         # Load data from listEqPhenomena
@@ -733,7 +733,7 @@ function mainPI()
             push!(eqList, (listEqPhenomena[i,1], listEqPhenomena[i,2], string(listEqPhenomena[i,3])))
         end
 
-        # Visual Table for Equipment help
+        # Visual Table for Process help
         eqTreeView = TreeView(TreeModel(eqList))
         set_gtk_property!(eqTreeView, :reorderable, true)
         set_gtk_property!(eqTreeView, :enable_grid_lines, 3)
@@ -830,12 +830,12 @@ function mainPI()
         Gtk.showall(eqHelpWin)
     end
 
-    equipmentGrid[1, 2] = addEq
-    equipmentGrid[2, 2] = deleteEq
-    equipmentGrid[3, 2] = clearEq
-    equipmentGrid[4, 2] = helpEq
+    processGrid[1, 2] = addEq
+    processGrid[2, 2] = deleteEq
+    processGrid[3, 2] = clearEq
+    processGrid[4, 2] = helpEq
 
-    push!(equipmentFrame, equipmentGrid)
+    push!(processFrame, processGrid)
     ####################################################################################################################
 
     # Rawmaterial ##########################################################################################################
@@ -1430,7 +1430,7 @@ function mainPI()
         criterionScroll = ScrolledWindow()
         push!(criterionFrameTree, criterionScroll)
 
-        # Table for Equipment help
+        # Table for Process help
         criterionListH = ListStore(Int, String)
 
         # Load data from criterionList
@@ -1439,7 +1439,7 @@ function mainPI()
             push!(criterionListH, (listCriteriaM[i,1], listCriteriaM[i,2]))
         end
 
-        # Visual Table for Equipment help
+        # Visual Table for Process help
         criterionHTreeView = TreeView(TreeModel(criterionListH))
         set_gtk_property!(criterionHTreeView, :reorderable, true)
         set_gtk_property!(criterionHTreeView, :enable_grid_lines, 3)
@@ -1584,7 +1584,7 @@ function mainPI()
     set_gtk_property!(renderTxt8, :editable, false)
 
     c1 = TreeViewColumn("ID", renderTxt8, Dict([("text", 0)]))
-    c2 = TreeViewColumn("Equipment", renderTxt8, Dict([("text", 1)]))
+    c2 = TreeViewColumn("Process", renderTxt8, Dict([("text", 1)]))
     c3 = TreeViewColumn("Value", renderTxt7, Dict([("text", 2)]))
 
     # Allows to select rows
@@ -1629,7 +1629,7 @@ function mainPI()
     push!(crSettFrame, crSettGrid)
 
 
-    push!(equitMetNotebook, equipmentFrame, "Equipment")
+    push!(equitMetNotebook, processFrame, "Process")
     push!(equitMetNotebook, rawmaterialFrame, "Rawmaterial")
 
     ####################################################################################################################
@@ -1673,7 +1673,7 @@ function mainPI()
     # Table for Case Design
     ibaseCaseList = ListStore(String, String, String, String, String, String)
 
-    push!(ibaseCaseList, ("Int/Base Case", "Equipment", "Rawmaterial", "Criterion", "Solved"))
+    push!(ibaseCaseList, ("Int/Base Case", "Process", "Rawmaterial", "Criterion", "Solved"))
 
     # Visual Table for Case Design
     ibaseCaseTreeView = TreeView(TreeModel(ibaseCaseList))
@@ -1693,7 +1693,7 @@ function mainPI()
 
     c1 = TreeViewColumn("ID", renderTxti2, Dict([("text", 0)]))
     c2 = TreeViewColumn("Name", renderTxti1, Dict([("text", 1)]))
-    c3 = TreeViewColumn("Equipments", renderTxti2, Dict([("text", 2)]))
+    c3 = TreeViewColumn("Processs", renderTxti2, Dict([("text", 2)]))
     c4 = TreeViewColumn("Rawmaterial", renderTxti2, Dict([("text", 3)]))
     c5 = TreeViewColumn("Criterion", renderTxti2, Dict([("text", 4)]))
     c6 = TreeViewColumn("Status", renderTxti2, Dict([("text", 5)]))
